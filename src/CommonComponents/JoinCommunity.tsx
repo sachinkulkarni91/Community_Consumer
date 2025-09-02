@@ -4,12 +4,15 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import displayError from '../utils/error-toaster';
 import { getApiUrl } from '../utils/api-url';
+import { useUser } from '../Contexts/UserContext';
+import { getUser } from '../services/user';
 
 axios.defaults.withCredentials = true; // ensure cookies are sent
 
 export default function JoinCommunity() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { setUser } = useUser();
   const [isJoining, setIsJoining] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -25,7 +28,28 @@ export default function JoinCommunity() {
       try {
         setIsJoining(true);
         await axios.put(getApiUrl(`/api/communities/${encodeURIComponent(id)}/join`), {});
+        
         if (!cancelled) {
+          // Refresh user data to include the newly joined community
+          try {
+            const updatedUserInfo = await getUser();
+            console.log('Updated user info after join:', updatedUserInfo);
+            console.log('joinedCommunities:', updatedUserInfo.joinedCommunities);
+            
+            setUser({
+              name: updatedUserInfo.name,
+              username: updatedUserInfo.username,
+              email: updatedUserInfo.email,
+              id: updatedUserInfo.id,
+              role: updatedUserInfo.role,
+              communities: updatedUserInfo.joinedCommunities || [],
+              profilePhoto: updatedUserInfo.profilePhoto
+            });
+          } catch (userError) {
+            console.error('Error refreshing user data:', userError);
+            // Still proceed even if user refresh fails
+          }
+          
           navigate(`/feed`, { replace: true });
         }
       } catch (err: unknown) {
@@ -39,7 +63,7 @@ export default function JoinCommunity() {
     })();
 
     return () => { cancelled = true; };
-  }, [id, navigate]);
+  }, [id, navigate, setUser]);
 
   if (error) {
     return (
