@@ -26,7 +26,7 @@ const SignupPage = () => {
         name: userInfo.name,
         username: userInfo.username,
         email: userInfo.email,
-        role: 'user',
+        role: userInfo.role,
         id: userInfo.id,
         communities: userInfo.joinedCommunities,
         profilePhoto: userInfo.profilePhoto

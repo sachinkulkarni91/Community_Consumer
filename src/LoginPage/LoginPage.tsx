@@ -21,7 +21,14 @@ const LoginPage = () => {
   const handleLogin = async ()  => {
     // try to login and then set user context
     try {
-      await login.login(username, password);
+      const loginResponse = await login.login(username, password);
+      
+      // Check if this is a first login that needs profile completion
+      if (loginResponse && loginResponse.firstLogin) {
+        navigate(returnTo ? `/signup?return_to=${returnTo}` : '/signup');
+        return;
+      }
+      
       const userInfo = await getUser();
       if (userInfo.firstLogin) {
         navigate(returnTo ? `/signup?return_to=${returnTo}` : '/signup');
