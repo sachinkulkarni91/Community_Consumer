@@ -1,5 +1,7 @@
 import axios from 'axios'
-axios.defaults.withCredentials = true; 
+
+// Configure axios
+axios.defaults.withCredentials = true;
 
 const getBaseUrl = () => {
   // In development, use proxy. In production, use full backend URL
@@ -12,7 +14,9 @@ const getBaseUrl = () => {
 const baseUrl = getBaseUrl()
 
 const login = async (username : string, password : string) => {
-  const user =  await axios.post(baseUrl, { username, password })
+  const user = await axios.post(baseUrl, { username, password }, {
+    withCredentials: false  // Temporarily disable to test CORS
+  })
   return user.data
 }
 
