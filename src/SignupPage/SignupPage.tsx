@@ -13,6 +13,7 @@ const SignupPage = () => {
   // Handle return URL for community invite
   const params = new URLSearchParams(location.search);
   const returnTo = params.get("return_to")
+  const inviteId = params.get("invite")
 
   const navigate = useNavigate();
   const {setUser} = useUser();
@@ -33,6 +34,8 @@ const SignupPage = () => {
       })
       if (returnTo) {
         window.location.href = returnTo;
+      } else if (inviteId) {
+        navigate(`/community/join/${inviteId}`)
       } else {
         navigate('/feed')
       }

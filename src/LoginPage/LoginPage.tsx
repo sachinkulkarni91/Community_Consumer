@@ -25,13 +25,23 @@ const LoginPage = () => {
       
       // Check if this is a first login that needs profile completion
       if (loginResponse && loginResponse.firstLogin) {
-        navigate(returnTo ? `/signup?return_to=${returnTo}` : '/signup');
+        const signupUrl = returnTo 
+          ? `/signup?return_to=${returnTo}` 
+          : inviteId 
+          ? `/signup?invite=${inviteId}`
+          : '/signup';
+        navigate(signupUrl);
         return;
       }
       
       const userInfo = await getUser();
       if (userInfo.firstLogin) {
-        navigate(returnTo ? `/signup?return_to=${returnTo}` : '/signup');
+        const signupUrl = returnTo 
+          ? `/signup?return_to=${returnTo}` 
+          : inviteId 
+          ? `/signup?invite=${inviteId}`
+          : '/signup';
+        navigate(signupUrl);
         return;
       }
       setUser({

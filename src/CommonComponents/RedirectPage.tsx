@@ -1,5 +1,5 @@
 import { useSearchParams, useParams } from "react-router-dom";
-import { getRedirect } from "../services/redirect";
+import { getApiUrl } from "../utils/api-url";
 import displayError from "../utils/error-toaster";
 import { useEffect, useState } from "react";
 
@@ -19,9 +19,10 @@ const RedirectPage = () => {
 
     const redirectTo = async () => {
       try {
-        const response = await getRedirect(code);
-        console.log('response.redirectUrl', response.redirectUrl)
-        window.location.href = response.redirectUrl;
+        // Instead of using axios, just redirect directly to the backend invite handler
+        // The backend will set the invite cookie and redirect to the appropriate frontend page
+        const backendUrl = getApiUrl(`/community/redirect?t=${code}`);
+        window.location.href = backendUrl;
       } catch (error) {
         console.error('Redirect error:', error);
         displayError(error);
