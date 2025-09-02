@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseUrl = '/community/join'
+const baseUrl = '/api/redirect'
 
 export const getRedirect = async (code: string) => {
   const response = await axios.get(`${baseUrl}/?t=${code}`);

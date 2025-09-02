@@ -30,6 +30,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/community/redirect" element={<RedirectPage />} />
+          <Route path="/community/redirect/:token" element={<RedirectPage />} />
           <Route path="/community/join/:id" element={<JoinCommunity />} />
            <Route element={<Layout></Layout>}> 
             <Route path="/feed" element={<FeedPage />} />
