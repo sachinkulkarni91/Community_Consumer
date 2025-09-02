@@ -61,40 +61,40 @@ const EditProfilePopup = ({ref, setVisible} : Props) => {
 
   return (
     <>
-      <div ref={ref} className='fixed w-[90vw] max-w-[500px] max-h-[90vh] bg-post z-40 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-2xl p-4 md:p-6 text-left overflow-y-auto' >
-        <div className='text-text text-[20px] md:text-[24px] font-bold font-condensed mb-4 md:mb-6' >Edit Profile</div>
+      <div ref={ref} className='fixed w-[90vw] max-w-[450px] max-h-[85vh] bg-post z-40 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-2xl p-3 md:p-4 text-left overflow-y-auto' >
+        <div className='text-text text-[16px] md:text-[20px] font-bold font-condensed mb-3 md:mb-4' >Edit Profile</div>
         
         {/* Email Field */}
-        <div className='w-full border-lightText text-text text-[14px] md:text-[16px] h-[48px] md:h-[56px] border-1 rounded-lg relative mb-4 md:mb-6' >
-          <label htmlFor="Email" className='top-[-14%] left-6 md:left-8 absolute text-xs z-10 bg-post px-1 text-lightText'>Email</label>
-          <input id="Email" className='w-full h-full outline-none px-3 md:px-4 py-2' type="email" placeholder='Email' value={email} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {setEmail(e.target.value)}}/>
+        <div className='w-full border-lightText text-text text-[12px] md:text-[14px] h-[40px] md:h-[48px] border-1 rounded-lg relative mb-3 md:mb-4' >
+          <label htmlFor="Email" className='top-[-14%] left-4 md:left-6 absolute text-xs z-10 bg-post px-1 text-lightText'>Email</label>
+          <input id="Email" className='w-full h-full outline-none px-2 md:px-3 py-1.5' type="email" placeholder='Email' value={email} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {setEmail(e.target.value)}}/>
         </div>
         
         {/* Profile Picture */}
-        <div className='text-text text-[16px] md:text-[20px] font-bold font-condensed mb-4 md:mb-6' >Profile Picture</div>
-        <div className='mb-4 md:mb-6'>
-          <ImageUpload width="64" height="64" setFile={setFile}></ImageUpload>
+        <div className='text-text text-[14px] md:text-[16px] font-bold font-condensed mb-2 md:mb-3' >Profile Picture</div>
+        <div className='mb-3 md:mb-4'>
+          <ImageUpload width="56" height="56" setFile={setFile}></ImageUpload>
         </div>
         
         {/* Password Section */}
-        <div className='text-text text-[16px] md:text-[20px] font-bold font-condensed mb-4 md:mb-6' >New Password</div>
-        <div className='w-full border-lightText text-text text-[14px] md:text-[16px] h-[48px] md:h-[56px] border-1 rounded-lg relative mb-4 md:mb-6' >
-          <label htmlFor="NewPassword" className='top-[-14%] left-6 md:left-8 absolute text-xs z-10 bg-post px-1 text-lightText'>New Password</label>
-          <input id="NewPassword" className='w-full h-full outline-none px-3 md:px-4 py-2' type="password" placeholder='Change your password' value={password} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {setPassword(e.target.value)}}/>
+        <div className='text-text text-[14px] md:text-[16px] font-bold font-condensed mb-2 md:mb-3' >New Password</div>
+        <div className='w-full border-lightText text-text text-[12px] md:text-[14px] h-[40px] md:h-[48px] border-1 rounded-lg relative mb-3 md:mb-4' >
+          <label htmlFor="NewPassword" className='top-[-14%] left-4 md:left-6 absolute text-xs z-10 bg-post px-1 text-lightText'>New Password</label>
+          <input id="NewPassword" className='w-full h-full outline-none px-2 md:px-3 py-1.5' type="password" placeholder='Change your password' value={password} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {setPassword(e.target.value)}}/>
         </div>
-        <div className='w-full border-lightText text-text text-[14px] md:text-[16px] h-[48px] md:h-[56px] border-1 rounded-lg relative mb-4 md:mb-6' >
-          <label htmlFor="ConfirmPassword" className='top-[-14%] left-6 md:left-8 absolute text-xs z-10 bg-post px-1 text-lightText'>Confirm New Password</label>
-          <input id="ConfirmPassword" className='w-full h-full outline-none px-3 md:px-4 py-2' type="password" placeholder='Confirm your password' value={confirm} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {setConfirm(e.target.value)}}/>
+        <div className='w-full border-lightText text-text text-[12px] md:text-[14px] h-[40px] md:h-[48px] border-1 rounded-lg relative mb-3 md:mb-4' >
+          <label htmlFor="ConfirmPassword" className='top-[-14%] left-4 md:left-6 absolute text-xs z-10 bg-post px-1 text-lightText'>Confirm New Password</label>
+          <input id="ConfirmPassword" className='w-full h-full outline-none px-2 md:px-3 py-1.5' type="password" placeholder='Confirm your password' value={confirm} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {setConfirm(e.target.value)}}/>
         </div>
         
         {/* Buttons */}
-        <div className='flex justify-between items-center pt-2' >
-          <button className='py-2 px-4 rounded-2xl text-lightText cursor-pointer hover:bg-secondary transition-colors' onClick={() => {setVisible(false)}}>Cancel</button>
-          <button className='py-2 px-4 rounded-2xl text-white bg-[#00338D] flex items-center gap-2 hover:bg-[#002266] transition-colors' onClick={handleSubmit}>
+        <div className='flex justify-between items-center pt-1' >
+          <button className='py-1.5 px-3 rounded-2xl text-lightText cursor-pointer hover:bg-secondary transition-colors text-sm' onClick={() => {setVisible(false)}}>Cancel</button>
+          <button className='py-1.5 px-3 rounded-2xl text-white bg-[#00338D] flex items-center gap-1.5 hover:bg-[#002266] transition-colors text-sm' onClick={handleSubmit}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
+              width="16"
+              height="16"
               fill="currentColor"
               className="bi bi-arrow-right-short"
               viewBox="0 0 16 16"
