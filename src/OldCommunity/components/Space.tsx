@@ -3,7 +3,6 @@ import Post from '../../CommonComponents/Post'
 import { deletePost} from '../../services/posts'
 import { useUser } from '../../Contexts/UserContext';
 import { getSpace } from '../../services/spaces';
-import NewPost from '../../CommonComponents/NewPost';
 import ChatSpace from '../../CommonComponents/ChatSpace';
 
 import postCleaner from '../../utils/post.middleware';
@@ -17,7 +16,6 @@ type Props = {
 const Space = ({spaceID, communityID} : Props) => {
   const [posts, setPosts] = useState<Post[]>([])
   const [space, setSpace] = useState<RawSpace>()
-  const [newPost, setNewPost] = useState<boolean>(false)
 
   const {user} = useUser()
 
@@ -59,22 +57,15 @@ const Space = ({spaceID, communityID} : Props) => {
   }
   if (space.type === 'feed') {
   return (
-    <>
-    {newPost && <NewPost exitFunction={setNewPost} posts={posts} spaceID={spaceID} communityID={communityID}></NewPost>}
     <div className='flex-1 mt-12 h-full pr-2 mr-20'>
           <div className='flex justify-between items-center mb-8'>
             <div className='font-bold text-[24px] font-condensed text-text'>{space.name}</div>
-            <div className='bg-[#00338D] text-white flex py-2 px-3 rounded-4xl items-center justify-center font-medium text-[14px]' onClick={() => {setNewPost(true)}}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 -960 960 960" fill='currentColor'><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80z"/></svg>
-              New Post
-            </div>
           </div>
           <div className='overflow-scroll h-full pb-24'>
           {posts.map((p: Post) => 
             <Post key={p.id} id={p.id} title={p.title} author={p.author} likes={p.likes} comments={p.comments} community={p.community} body={p.body} handleDeletePost={handleDeletePost} likedInitial={p.liked} time={p.time} profilePhoto={p.profilePhoto} communityProfilePhoto={p.communityProfilePhoto}></Post>)}
           </div>
         </div>
-    </>
   ) 
 }
 if (space.type === 'chat') return <ChatSpace space={space}></ChatSpace>

@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { deletePost, getAllPosts } from '../services/posts'
-import NewPost from '../CommonComponents/NewPost'
 import { useUser } from '../Contexts/UserContext'
 import MainFeed from './components/MainFeed'
 import postCleaner from '../utils/post.middleware'
 import displayError from '../utils/error-toaster'
 
 const FeedPage = () => {
-  const [newPostDisplay, setNewPostDisplay] = useState<boolean>(false)
   const [posts, setPosts] = useState<Post[]>([])
   const {user} = useUser()
   const location = useLocation()
@@ -54,8 +52,7 @@ const FeedPage = () => {
 
   return (
     <>
-      {newPostDisplay && <NewPost exitFunction={setNewPostDisplay} posts={posts} communityID="6888ab016820942a688bbdad"></NewPost>}
-      <MainFeed handleDeletePost={handleDeletePost} posts={posts} newPostFunction={setNewPostDisplay}></MainFeed>
+      <MainFeed handleDeletePost={handleDeletePost} posts={posts}></MainFeed>
     </>
   )
 }
