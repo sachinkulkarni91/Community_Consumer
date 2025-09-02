@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { getApiUrl } from '../utils/api-url'
 
 // Configure axios
 axios.defaults.withCredentials = true;
@@ -19,7 +20,7 @@ const login = async (username : string, password : string) => {
 }
 
 const logout = async () => {
-  const logoutUrl = import.meta.env.DEV ? '/auth/logout' : `${import.meta.env.VITE_API_URL}/auth/logout`
+  const logoutUrl = getApiUrl('/auth/logout')
   await axios.post(logoutUrl)
   return
 }
