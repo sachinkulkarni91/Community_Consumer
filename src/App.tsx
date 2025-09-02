@@ -32,6 +32,9 @@ function App() {
           <Route path="/community/redirect" element={<RedirectPage />} />
           <Route path="/community/redirect/:token" element={<RedirectPage />} />
           <Route path="/community/join/:id" element={<JoinCommunity />} />
+          {/* Add missing routes for backend redirects */}
+          <Route path="/dashboard" element={<FeedPage />} />
+          <Route path="/auth/login" element={<LoginPage />} />
            <Route element={<Layout></Layout>}> 
             <Route path="/feed" element={<FeedPage />} />
             <Route path="/communities" element={<CommunitiesPage />} />

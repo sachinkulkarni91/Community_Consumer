@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { deletePost, getAllPosts } from '../services/posts'
 import NewPost from '../CommonComponents/NewPost'
 import { useUser } from '../Contexts/UserContext'
@@ -10,6 +11,9 @@ const FeedPage = () => {
   const [newPostDisplay, setNewPostDisplay] = useState<boolean>(false)
   const [posts, setPosts] = useState<Post[]>([])
   const {user} = useUser()
+  const location = useLocation()
+  const navigate = useNavigate()
+  
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -25,6 +29,17 @@ const FeedPage = () => {
     }
     fetchPosts()
   }, [user])
+
+  // Handle community invite from URL parameter
+  useEffect(() => {
+    const params = new URLSearchParams(location.search)
+    const inviteId = params.get('invite')
+    
+    if (inviteId && user) {
+      // Redirect to community join page
+      navigate(`/community/join/${inviteId}`)
+    }
+  }, [location, user, navigate])
 
   const handleDeletePost = async (id:string) => {
     try {
