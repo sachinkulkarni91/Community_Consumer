@@ -14,9 +14,7 @@ const getBaseUrl = () => {
 const baseUrl = getBaseUrl()
 
 const login = async (username : string, password : string) => {
-  const user = await axios.post(baseUrl, { username, password }, {
-    withCredentials: false  // Temporarily disable to test CORS
-  })
+  const user = await axios.post(baseUrl, { username, password })
   return user.data
 }
 

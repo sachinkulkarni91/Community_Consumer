@@ -8,9 +8,6 @@ import Input from '../CommonComponents/Input';
 
 // Login page component
 const LoginPage = () => {
-  // Debug: Check if environment variable is loaded
-  console.log('VITE_API_URL:', import.meta.env.VITE_API_URL)
-  
   // Handle return URL for community invite
   const params = new URLSearchParams(location.search);
   const returnTo = params.get("return_to")

@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import displayError from '../utils/error-toaster';
+import { getApiUrl } from '../utils/api-url';
 
 axios.defaults.withCredentials = true; // ensure cookies are sent
 
@@ -23,7 +24,7 @@ export default function JoinCommunity() {
     (async () => {
       try {
         setIsJoining(true);
-        await axios.put(`/api/communities/${encodeURIComponent(id)}/join`, {});
+        await axios.put(getApiUrl(`/api/communities/${encodeURIComponent(id)}/join`), {});
         if (!cancelled) {
           navigate(`/feed`, { replace: true });
         }
