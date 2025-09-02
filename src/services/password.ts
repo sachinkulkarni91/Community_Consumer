@@ -1,5 +1,7 @@
 import axios from "axios"
-const baseUrl = '/auth/forgot-password'
+import { getApiUrl } from '../utils/api-url'
+
+const baseUrl = getApiUrl('/auth/forgot-password')
 
 const forgotPassword = async (email: string) => {
   const response = await axios.post(baseUrl, { email })

@@ -1,6 +1,15 @@
 import axios from 'axios'
 axios.defaults.withCredentials = true; 
-const baseUrl = '/api/me'
+
+const getBaseUrl = () => {
+  // In development, use proxy. In production, use full backend URL
+  if (import.meta.env.DEV) {
+    return '/api/me'
+  }
+  return `${import.meta.env.VITE_API_URL}/api/me`
+}
+
+const baseUrl = getBaseUrl()
 
 // Add request interceptor to handle authentication
 axios.interceptors.request.use((config) => {

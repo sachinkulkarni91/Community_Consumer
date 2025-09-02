@@ -1,16 +1,17 @@
 // services/community.ts
 
 import axios from 'axios'
+import { getApiUrl } from '../utils/api-url'
 
 // Get all communities
 export const getAllCommunities = async () => {
-  const res = await axios.get('/api/communities')
+  const res = await axios.get(getApiUrl('/api/communities'))
   return res.data
 }
 
 // Get one community by ID
 export const getCommunityById = async (id: string) => {
-  const res = await axios.get(`/api/communities/${id}`)
+  const res = await axios.get(getApiUrl(`/api/communities/${id}`))
   return res.data
 }
 
@@ -20,7 +21,7 @@ export const createCommunity = async (
   description: string,
   generic: number = 1
 ) => {
-  const res = await axios.post('/api/communities', {
+  const res = await axios.post(getApiUrl('/api/communities'), {
     name,
     description,
     generic
@@ -37,7 +38,7 @@ export const createCommunityCustom = async (
   const formData = new FormData();
   formData.append('image', file);
 
-  const res = await axios.post('/api/communities/custom', {
+  const res = await axios.post(getApiUrl('/api/communities/custom'), {
     name,
     description,
     formData
@@ -47,7 +48,7 @@ export const createCommunityCustom = async (
 
 // Join a community
 export const requestJoinCommunity = async (communityID: string, userID: string) => {
-  const response = await axios.post(`/api/communities/${communityID}/request-join`, {
+  const response = await axios.post(getApiUrl(`/api/communities/${communityID}/request-join`), {
     userId: userID
   });
   return response.data;
@@ -56,7 +57,7 @@ export const requestJoinCommunity = async (communityID: string, userID: string) 
 
 // Leave a community
 export const leaveCommunity = async (communityId: string, userId: string) => {
-  const res = await axios.put(`/api/communities/${communityId}/leave`, {
+  const res = await axios.put(getApiUrl(`/api/communities/${communityId}/leave`), {
     userId
   })
   return res.data
@@ -65,7 +66,7 @@ export const leaveCommunity = async (communityId: string, userId: string) => {
 // Get all invites
 export const fetchAdminInvites = async (): Promise<CommunityInvite[]> => {
   try {
-    const response = await axios.get('/api/me/admin-requests');
+    const response = await axios.get(getApiUrl('/api/me/admin-requests'));
     return response.data; // Should be an array of communities with joinRequests
   } catch (error) {
     console.error('Failed to fetch admin invites:', error);
@@ -79,7 +80,7 @@ export const editCommunity = async (
   name: string,
   description: string,
 ) => {
-  const res = await axios.put(`/api/communities/${id}`, {
+  const res = await axios.put(getApiUrl(`/api/communities/${id}`), {
     name,
     description,
   })
@@ -94,7 +95,7 @@ export const editCommunityPhoto = async (
   const formData = new FormData();
   formData.append('image', file);
 
-  const res = await axios.put(`/api/communities/${id}/photo`, formData, {
+  const res = await axios.put(getApiUrl(`/api/communities/${id}/photo`), formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
     }
@@ -104,19 +105,19 @@ export const editCommunityPhoto = async (
 
 // Delete a community
 export const deleteCommunity = async (id: string) => {
-  const res = await axios.delete(`/api/communities/${id}`)
+  const res = await axios.delete(getApiUrl(`/api/communities/${id}`))
   return res.data
 }
 
 export const approveJoinRequest = async (communityID: string, userID: string) => {
-  const response = await axios.post(`/api/communities/${communityID}/approve-request`, {
+  const response = await axios.post(getApiUrl(`/api/communities/${communityID}/approve-request`), {
     userId: userID
   });
   return response.data;
 };
 
 export const rejectJoinRequest = async (communityID: string, userID: string) => {
-  const response = await axios.post(`/api/communities/${communityID}/reject-request`, {
+  const response = await axios.post(getApiUrl(`/api/communities/${communityID}/reject-request`), {
     userId: userID
   });
   return response.data;
@@ -129,6 +130,6 @@ export const getCommunityIDWithInvite = async (return_to: string) => {
 }
 
 export const joinCommunity = async (communityID: string) => {
-  const response = await axios.put(`/api/communities/${communityID}/join`);
+  const response = await axios.put(getApiUrl(`/api/communities/${communityID}/join`));
   return response.data;
 };
