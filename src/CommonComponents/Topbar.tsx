@@ -65,13 +65,24 @@ const Topbar = ({ sidebarOpen, setSidebarOpen }: Props) => {
     // Handle logout of user
     const handleLogout = async () => {
       try {
+        console.log('Logging out...')
         await login.logout()
+        console.log('Logout successful, clearing user context and localStorage')
+        
+        // Clear user context and localStorage
         setUser(null)
+        localStorage.removeItem('user')
+        
+        console.log('Navigating to login page')
         navigate('/login')
       } catch (error) {
+        console.error('Logout error:', error)
         displayError(error)
+        // Even if logout fails on backend, clear local state
+        setUser(null)
+        localStorage.removeItem('user')
+        navigate('/login')
       }
-
     }
 
     // Change theme between dark mode and light mode
