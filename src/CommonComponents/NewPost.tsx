@@ -54,9 +54,20 @@ const NewPost = ({posts, exitFunction, communityID, spaceID} : Props) => {
     <>
     <div className='fixed w-full h-[100%] top-0 left-0 bg-black opacity-40 z-40' onClick={() => {exitFunction(false)}}>
     </div>
-    <div className="fixed top-1/4 left-1/4 w-1/2 h-1/2 bg-post rounded-2xl z-50 p-6 flex flex-col">
-      <div className='font-bold text-2xl text-left font-condensed text-text'>
-        Create a new Post
+    <div className="fixed top-1/4 left-1/4 w-1/2 h-1/2 bg-post rounded-2xl z-50 p-6 flex flex-col relative">
+      <div className='flex justify-between items-center mb-4'>
+        <div className='font-bold text-2xl text-left font-condensed text-text'>
+          Create a new Post
+        </div>
+        <button 
+          onClick={() => exitFunction(false)}
+          className='text-lightText hover:text-text transition-colors p-1 rounded-full hover:bg-secondary'
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
       </div>
       <div id='title' className='relative w-3/4 font-normal text-md text-left my-4'>
           <input type="text"  className='w-full h-full outline-none border-1 border-[#C1C1C1] py-4 px-3 rounded-xl text-text' placeholder="Enter your post's title" value={title} onChange={(e : React.ChangeEvent<HTMLInputElement>) => {setTitle(e.target.value)}}/>
