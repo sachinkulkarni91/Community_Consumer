@@ -9,11 +9,10 @@ import postCleaner from '../../utils/post.middleware';
 import displayError from '../../utils/error-toaster';
 
 type Props = {
-  spaceID: string,
-  communityID: string
+  spaceID: string
 }
 // Generic space holder that either displays a feed or a chat
-const Space = ({spaceID, communityID} : Props) => {
+const Space = ({spaceID} : Props) => {
   const [posts, setPosts] = useState<Post[]>([])
   const [space, setSpace] = useState<RawSpace>()
 

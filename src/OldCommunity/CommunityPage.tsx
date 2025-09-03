@@ -55,7 +55,7 @@ const CommunityPage = () => {
         );
       }} ></CommunitySidebar>
       <SpacesSidebar communityID={id} spaces={spaces} setSpace={setCurrentSpace} setSpaces={setSpaces}></SpacesSidebar>
-      <Space spaceID={currentSpace} communityID={community.id}></Space>
+  <Space spaceID={currentSpace}></Space>
     </div>
   </div>
   )
