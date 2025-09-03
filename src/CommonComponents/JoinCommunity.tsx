@@ -27,6 +27,25 @@ export default function JoinCommunity() {
     (async () => {
       try {
         setIsJoining(true);
+        
+        // First check if user is already a member of this community
+        const currentUserInfo = await getUser();
+        console.log('Current user info:', currentUserInfo);
+        console.log('User joinedCommunities:', currentUserInfo.joinedCommunities);
+        
+        const isAlreadyMember = currentUserInfo.joinedCommunities?.some(
+          (community: any) => community.id === id || community._id === id || community === id
+        );
+        
+        if (isAlreadyMember) {
+          console.log('✅ User already a member, redirecting to feed');
+          if (!cancelled) {
+            navigate(`/feed`, { replace: true });
+          }
+          return;
+        }
+        
+        console.log('❌ User not a member, attempting to join...');
         await axios.put(getApiUrl(`/api/communities/${encodeURIComponent(id)}/join`), {});
         
         if (!cancelled) {
