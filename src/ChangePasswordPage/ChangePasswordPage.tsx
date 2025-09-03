@@ -108,7 +108,7 @@ const ChangePasswordPage = () => {
               👋 Welcome {(userInfo?.name ?? '').trim().replace(/^./, (c: string) => c.toUpperCase())}!
             </p>
             <p>
-                Please change your temporary password to complete your account setup.
+                Please change your One Time password to complete your account setup.
             </p>
           </div>
 

@@ -81,7 +81,7 @@ const LoginPage = () => {
           {inviteType === 'user' && (
             <div className='mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg'>
               <p>👋 You've been invited!</p>
-              <p>Use your email as username and the temporary password from your invite email to login.</p>
+              <p>Use your email as username and the One Time Password from your invite email to login.</p>
             </div>
           )}
           
