@@ -67,7 +67,7 @@ const NewPost = ({posts, exitFunction, communityID, spaceID} : Props) => {
         await handleNewPost()
         exitFunction(false)
       }}> 
-        <div className='px-4 py-2 bg-[#00338D] text-white text-lg rounded-xl'>Create Post</div>
+        <div className='px-3 py-1.5 bg-[#00338D] text-white text-sm rounded-xl cursor-pointer hover:bg-[#002266] transition-colors'>Create Post</div>
       </div>
     </div>
     </>
