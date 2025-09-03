@@ -4,9 +4,8 @@ import {getUser} from '../services/user';
 import { useUser } from '../Contexts/UserContext';
 import displayError from '../utils/error-toaster';
 import Input from '../CommonComponents/Input';
-import { signup } from '../services/signup';
-import { getInviteInfo, getInvitedUserInfo } from '../services/invite';
-import { generateUsernameFromName } from '../utils/username-generator';
+import { signup, signupWithInvite, regularSignup } from '../services/signup';
+import { getInviteInfo } from '../services/invite';
 
 
 // Signup page component
@@ -25,59 +24,41 @@ const SignupPage = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
-  const [hasInvite, setHasInvite] = useState(false);
-  const [emailValidationMessage, setEmailValidationMessage] = useState("");
-  const [userDataLoaded, setUserDataLoaded] = useState(false);
-  const [isReadonly, setIsReadonly] = useState(false);
+  const [inviteInfo, setInviteInfo] = useState<any>(null);
+  const [isInviteUser, setIsInviteUser] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Check if user came through an invite link
+  // Check for invite on component mount
   useEffect(() => {
     const checkInvite = async () => {
       if (inviteId) {
         try {
-          await getInviteInfo();
-          setHasInvite(true);
+          const info = await getInviteInfo();
+          setInviteInfo(info);
+          
+          if (info.type === 'user' && info.invitedEmail) {
+            // User-specific invite - pre-fill all data
+            setIsInviteUser(true);
+            setEmail(info.invitedEmail);
+            setName(info.invitedName || '');
+            setUsername(info.invitedUsername || '');
+          } else if (info.type === 'community') {
+            // Community invite - regular signup flow
+            setIsInviteUser(false);
+          }
         } catch (error) {
           console.error('No valid invite found:', error);
+          setIsInviteUser(false);
         }
+      } else {
+        setIsInviteUser(false);
       }
+      setIsLoading(false);
     };
     checkInvite();
   }, [inviteId]);
 
-  // Fetch user data when email is entered (for invite users)
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (hasInvite && email && email.includes('@') && !userDataLoaded) {
-        try {
-          const userData = await getInvitedUserInfo(email);
-          setName(userData.name || '');
-          setUsername(generateUsernameFromName(userData.name || ''));
-          setUserDataLoaded(true);
-          setIsReadonly(true);
-          setEmailValidationMessage("✓ Email and profile data loaded");
-        } catch (error: any) {
-          setEmailValidationMessage(error.response?.data?.error || "This email was not invited");
-          setUserDataLoaded(false);
-          setIsReadonly(false);
-          setName('');
-          setUsername('');
-        }
-      }
-    };
-
-    const timeoutId = setTimeout(fetchUserData, 500); // Debounce
-    return () => clearTimeout(timeoutId);
-  }, [email, hasInvite, userDataLoaded]);
-
-  // Reset data when email changes
-  useEffect(() => {
-    if (hasInvite && email !== '') {
-      setUserDataLoaded(false);
-    }
-  }, [email, hasInvite]);
-
-  // Handle user signup and set user context
+  // Handle signup
   const handleSignup = async ()  => {
     // Validate password confirmation
     if (password !== confirmPassword) {
@@ -90,14 +71,19 @@ const SignupPage = () => {
       return;
     }
 
-    // If this is an invite signup, validate that user data is loaded
-    if (hasInvite && !userDataLoaded) {
-      displayError("Please enter a valid invited email address first");
-      return;
-    }
-
     try {
-      await signup(username, password, name, email);
+      if (isInviteUser) {
+        // Use invite-based signup - the backend will get the token from the cookie
+        await signupWithInvite(password);
+      } else {
+        // Regular signup
+        if (!email || !name || !username) {
+          displayError("Please fill in all required fields");
+          return;
+        }
+        await regularSignup(username, password, name, email);
+      }
+
       const userInfo = await getUser();
       setUser({
         name: userInfo.name,
@@ -108,6 +94,7 @@ const SignupPage = () => {
         communities: userInfo.joinedCommunities,
         profilePhoto: userInfo.profilePhoto
       })
+      
       if (returnTo) {
         window.location.href = returnTo;
       } else if (inviteId) {
@@ -117,27 +104,31 @@ const SignupPage = () => {
       }
 
     } catch (error: any) {
-      // Provide more specific error messages for invite-related errors
-      if (hasInvite && error.response?.data?.error?.includes("Invalid email")) {
-        displayError("This email address was not invited or has already completed signup. Please check the email address or contact your administrator.");
-      } else if (hasInvite && error.response?.data?.error?.includes("already completed")) {
-        displayError("This account has already been activated. Please try logging in instead.");
+      console.error('Signup error:', error);
+      if (error.response?.data?.error) {
+        displayError(error.response.data.error);
       } else {
-        displayError(error);
+        displayError("An error occurred during signup. Please try again.");
       }
     } finally {
-      // Don't clear fields for invite users since they're pre-filled
-      if (!hasInvite) {
+      // Clear passwords
+      setPassword("")
+      setConfirmPassword("")
+      // Only clear other fields for non-invite users
+      if (!isInviteUser) {
         setEmail("")
         setUsername("")
-        setPassword("")
-        setConfirmPassword("")
         setName("")
-      } else {
-        setPassword("")
-        setConfirmPassword("")
       }
     }
+  }
+
+  if (isLoading) {
+    return (
+      <div className='flex justify-center items-center aspect-[16/9] w-full'>
+        <div className='text-lg'>Loading...</div>
+      </div>
+    );
   }
 
   return (
@@ -146,40 +137,29 @@ const SignupPage = () => {
         <div className='w-3/4 max-w-[550px] bg-primary rounded-4xl flex flex-col text-lightText'> 
           <div className='text-4xl text-left text-text mb-4'> <b>Welcome to Knitspace</b></div>
           <div className='text-lg text-left mb-6'>
-            {hasInvite ? 'Complete your account setup' : 'Create a new account'}
+            {isInviteUser ? 'Complete your account setup' : 'Create a new account'}
           </div>
           
-          {hasInvite && (
+          {isInviteUser && (
             <div className='mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg'>
               <p className='text-sm text-blue-800'>
-                🎯 You're setting up your account through an invite. Enter your email to load your profile information.
+                🎯 You've been invited to join! Your profile information is already set up. Just create a password to complete your account.
               </p>
             </div>
           )}
           
-          <Input 
-            label="Email" 
-            type="text" 
-            id="Email" 
-            placeholder="Enter your email" 
-            value={email} 
-            setValue={setEmail}
-            disabled={hasInvite && isReadonly}
-          />
-          
-          {hasInvite && emailValidationMessage && (
-            <div className={`mt-1 mb-3 text-sm ${
-              emailValidationMessage.startsWith('✓') 
-                ? 'text-green-600' 
-                : 'text-red-600'
-            }`}>
-              {emailValidationMessage}
-            </div>
-          )}
-
-          {/* Show name and username fields for regular signup or as readonly for invite signup */}
-          {(!hasInvite || userDataLoaded) && (
+          {/* Show all fields for regular signup, only password fields for invite users */}
+          {!isInviteUser && (
             <>
+              <Input 
+                label="Email" 
+                type="text" 
+                id="Email" 
+                placeholder="Enter your email" 
+                value={email} 
+                setValue={setEmail}
+              />
+              
               <Input 
                 label="Name" 
                 type="text" 
@@ -187,8 +167,8 @@ const SignupPage = () => {
                 placeholder="Enter your Name" 
                 value={name} 
                 setValue={setName}
-                disabled={hasInvite && isReadonly}
               />
+              
               <Input 
                 label="Username" 
                 type="text" 
@@ -196,9 +176,18 @@ const SignupPage = () => {
                 placeholder="Enter a username" 
                 value={username} 
                 setValue={setUsername}
-                disabled={hasInvite && isReadonly}
               />
             </>
+          )}
+
+          {isInviteUser && (
+            <div className='mb-4 p-3 bg-gray-50 border border-gray-200 rounded-lg'>
+              <div className='text-sm text-gray-700'>
+                <div><strong>Email:</strong> {email}</div>
+                <div><strong>Name:</strong> {name}</div>
+                <div><strong>Username:</strong> {username}</div>
+              </div>
+            </div>
           )}
 
           {/* Password fields - always shown */}
@@ -236,12 +225,12 @@ const SignupPage = () => {
             <div className='flex-2/3 text-left text-md'></div>
             <button 
               className={`flex-1/3 max-w-[100px] text-sm text-white py-2 px-2 rounded-3xl w-full flex justify-center items-center gap-1 transition-all duration-300 border-2 my-8 ${
-                hasInvite && (!userDataLoaded || password !== confirmPassword || password.length < 6)
+                (password !== confirmPassword || password.length < 6)
                   ? 'bg-gray-400 border-gray-400 cursor-not-allowed'
                   : 'bg-KPMG border-KPMG hover:bg-white hover:text-KPMG'
               }`} 
               onClick={() => {handleSignup()}}
-              disabled={hasInvite && (!userDataLoaded || password !== confirmPassword || password.length < 6)}
+              disabled={password !== confirmPassword || password.length < 6}
             >
             <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -257,7 +246,7 @@ const SignupPage = () => {
               .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8"
             />
           </svg>
-            {hasInvite ? 'Complete Setup' : 'Signup'}
+            {isInviteUser ? 'Complete Setup' : 'Signup'}
           </button>
           </div>
           
