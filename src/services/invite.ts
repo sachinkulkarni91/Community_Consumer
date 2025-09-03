@@ -13,6 +13,18 @@ export const getInviteInfo = async () => {
   }
 }
 
+// Get invited user information by email
+export const getInvitedUserInfo = async (email: string) => {
+  try {
+    const response = await axios.get(getApiUrl(`/api/invites/user-info/${encodeURIComponent(email)}`), {
+      withCredentials: true
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
 // Validate if an email was invited for the current invite
 export const validateInviteEmail = async (email: string) => {
   try {

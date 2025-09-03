@@ -19,7 +19,7 @@ type Props = {
 }
 
 // Post component
-const Post = ({id, title, body, author, community, likes, comments, handleDeletePost, likedInitial, time, profilePhoto, communityProfilePhoto}: Props) => {
+const Post = ({id, title, body, author, community, likes, comments, handleDeletePost: _handleDeletePost, likedInitial, time, profilePhoto, communityProfilePhoto}: Props) => {
   const [liked, setLiked] = useState(likedInitial);
   const [postLikes, setPostLikes] = useState(likes);
   const [showComments, setShowComments] = useState(false)
@@ -55,10 +55,7 @@ const Post = ({id, title, body, author, community, likes, comments, handleDelete
           <img className='w-[20px] h-[20px] md:w-[24px] md:h-[24px]' src={communityProfilePhoto} alt="Community Profile Photo" />
           <div className='font-bold font-stretch-50% text-text flex items-center text-[16px] md:text-[16px] font-condensed'>{community}</div>
         </div>
-        <div className='flex gap-4 md:gap-6 align-middle mr-2 md:mr-4'>
-          <div className='cursor-pointer w-[10px] h-[10px] md:w-[13px] md:h-[13px]' onClick={() => {handleDeletePost(id)}}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" className="md:w-[22px] md:h-[22px]" viewBox="0 -960 960 960" fill='currentColor'><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120zm400-600H280v520h400zM360-280h80v-360h-80zm160 0h80v-360h-80zM280-720v520z"/></svg>
-          </div>
+  <div className='flex gap-4 md:gap-6 align-middle mr-2 md:mr-4'>
           <div className='cursor-pointer w-[14px] h-[14px] md:w-[16px] md:h-[16px]'>
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" className="md:w-[28px] md:h-[28px]" fill="currentColor" viewBox="0 0 16 16">
             <path d="M3  9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3"/>

@@ -5,7 +5,8 @@ import { useUser } from '../Contexts/UserContext';
 import displayError from '../utils/error-toaster';
 import Input from '../CommonComponents/Input';
 import { signup } from '../services/signup';
-import { getInviteInfo, validateInviteEmail } from '../services/invite';
+import { getInviteInfo, getInvitedUserInfo } from '../services/invite';
+import { generateUsernameFromName } from '../utils/username-generator';
 
 
 // Signup page component
@@ -21,10 +22,13 @@ const SignupPage = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [hasInvite, setHasInvite] = useState(false);
   const [emailValidationMessage, setEmailValidationMessage] = useState("");
+  const [userDataLoaded, setUserDataLoaded] = useState(false);
+  const [isReadonly, setIsReadonly] = useState(false);
 
   // Check if user came through an invite link
   useEffect(() => {
@@ -41,35 +45,55 @@ const SignupPage = () => {
     checkInvite();
   }, [inviteId]);
 
-  // Validate email when user types (only if they have an invite)
+  // Fetch user data when email is entered (for invite users)
   useEffect(() => {
-    const validateEmail = async () => {
-      if (hasInvite && email && email.includes('@')) {
+    const fetchUserData = async () => {
+      if (hasInvite && email && email.includes('@') && !userDataLoaded) {
         try {
-          await validateInviteEmail(email);
-          setEmailValidationMessage("✓ This email is valid for the invite");
+          const userData = await getInvitedUserInfo(email);
+          setName(userData.name || '');
+          setUsername(generateUsernameFromName(userData.name || ''));
+          setUserDataLoaded(true);
+          setIsReadonly(true);
+          setEmailValidationMessage("✓ Email and profile data loaded");
         } catch (error: any) {
           setEmailValidationMessage(error.response?.data?.error || "This email was not invited");
+          setUserDataLoaded(false);
+          setIsReadonly(false);
+          setName('');
+          setUsername('');
         }
-      } else {
-        setEmailValidationMessage("");
       }
     };
 
-    const timeoutId = setTimeout(validateEmail, 500); // Debounce
+    const timeoutId = setTimeout(fetchUserData, 500); // Debounce
     return () => clearTimeout(timeoutId);
+  }, [email, hasInvite, userDataLoaded]);
+
+  // Reset data when email changes
+  useEffect(() => {
+    if (hasInvite && email !== '') {
+      setUserDataLoaded(false);
+    }
   }, [email, hasInvite]);
 
   // Handle user signup and set user context
   const handleSignup = async ()  => {
-    // If this is an invite signup, validate email first
-    if (hasInvite && email) {
-      try {
-        await validateInviteEmail(email);
-      } catch (error: any) {
-        displayError(error.response?.data?.error || "Please use the email address that received the invite");
-        return;
-      }
+    // Validate password confirmation
+    if (password !== confirmPassword) {
+      displayError("Passwords do not match");
+      return;
+    }
+
+    if (password.length < 6) {
+      displayError("Password must be at least 6 characters long");
+      return;
+    }
+
+    // If this is an invite signup, validate that user data is loaded
+    if (hasInvite && !userDataLoaded) {
+      displayError("Please enter a valid invited email address first");
+      return;
     }
 
     try {
@@ -102,10 +126,17 @@ const SignupPage = () => {
         displayError(error);
       }
     } finally {
-      setEmail("")
-      setUsername("")
-      setPassword("")
-      setName("")
+      // Don't clear fields for invite users since they're pre-filled
+      if (!hasInvite) {
+        setEmail("")
+        setUsername("")
+        setPassword("")
+        setConfirmPassword("")
+        setName("")
+      } else {
+        setPassword("")
+        setConfirmPassword("")
+      }
     }
   }
 
@@ -114,17 +145,27 @@ const SignupPage = () => {
       <div className='h-3/4 w-1/2 bg-primary rounded-4xl flex justify-center'>
         <div className='w-3/4 max-w-[550px] bg-primary rounded-4xl flex flex-col text-lightText'> 
           <div className='text-4xl text-left text-text mb-4'> <b>Welcome to Knitspace</b></div>
-          <div className='text-lg text-left mb-6'>Create a new account</div>
+          <div className='text-lg text-left mb-6'>
+            {hasInvite ? 'Complete your account setup' : 'Create a new account'}
+          </div>
           
           {hasInvite && (
             <div className='mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg'>
               <p className='text-sm text-blue-800'>
-                🎯 You're signing up through an invite link. Please use the email address that received the invitation.
+                🎯 You're setting up your account through an invite. Enter your email to load your profile information.
               </p>
             </div>
           )}
           
-          <Input label="Email" type="text" id="Email" placeholder="Enter your email" value={email} setValue={setEmail} />
+          <Input 
+            label="Email" 
+            type="text" 
+            id="Email" 
+            placeholder="Enter your email" 
+            value={email} 
+            setValue={setEmail}
+            disabled={hasInvite && isReadonly}
+          />
           
           {hasInvite && emailValidationMessage && (
             <div className={`mt-1 mb-3 text-sm ${
@@ -135,13 +176,73 @@ const SignupPage = () => {
               {emailValidationMessage}
             </div>
           )}
-          <Input label="Name" type="text" id="Name" placeholder="Enter your Name" value={name} setValue={setName} />
-          <Input label="Username" type="text" id="Username" placeholder="Enter a username" value={username} setValue={setUsername} />
-          <Input label="Password" type="password" id="Password" placeholder="Enter your new password" value={password} setValue={setPassword} />
+
+          {/* Show name and username fields for regular signup or as readonly for invite signup */}
+          {(!hasInvite || userDataLoaded) && (
+            <>
+              <Input 
+                label="Name" 
+                type="text" 
+                id="Name" 
+                placeholder="Enter your Name" 
+                value={name} 
+                setValue={setName}
+                disabled={hasInvite && isReadonly}
+              />
+              <Input 
+                label="Username" 
+                type="text" 
+                id="Username" 
+                placeholder="Enter a username" 
+                value={username} 
+                setValue={setUsername}
+                disabled={hasInvite && isReadonly}
+              />
+            </>
+          )}
+
+          {/* Password fields - always shown */}
+          <Input 
+            label="Password" 
+            type="password" 
+            id="Password" 
+            placeholder="Enter your new password" 
+            value={password} 
+            setValue={setPassword} 
+          />
+          
+          {/* Confirm password - always shown */}
+          <Input 
+            label="Confirm Password" 
+            type="password" 
+            id="ConfirmPassword" 
+            placeholder="Confirm your password" 
+            value={confirmPassword} 
+            setValue={setConfirmPassword} 
+          />
+
+          {/* Show validation for password match */}
+          {confirmPassword && (
+            <div className={`mt-1 mb-3 text-sm ${
+              password === confirmPassword 
+                ? 'text-green-600' 
+                : 'text-red-600'
+            }`}>
+              {password === confirmPassword ? '✓ Passwords match' : '⚠ Passwords do not match'}
+            </div>
+          )}
 
           <div className='flex items-center h-[48px] gap-16'>
             <div className='flex-2/3 text-left text-md'></div>
-            <button className="flex-1/3 max-w-[100px] text-sm text-white bg-KPMG py-2 px-2 rounded-3xl w-full flex justify-center items-center gap-1 transition-all duration-300 hover:bg-white hover:text-KPMG border-2 border-KPMG my-8" onClick={() => {handleSignup()}}>
+            <button 
+              className={`flex-1/3 max-w-[100px] text-sm text-white py-2 px-2 rounded-3xl w-full flex justify-center items-center gap-1 transition-all duration-300 border-2 my-8 ${
+                hasInvite && (!userDataLoaded || password !== confirmPassword || password.length < 6)
+                  ? 'bg-gray-400 border-gray-400 cursor-not-allowed'
+                  : 'bg-KPMG border-KPMG hover:bg-white hover:text-KPMG'
+              }`} 
+              onClick={() => {handleSignup()}}
+              disabled={hasInvite && (!userDataLoaded || password !== confirmPassword || password.length < 6)}
+            >
             <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -156,7 +257,7 @@ const SignupPage = () => {
               .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8"
             />
           </svg>
-            Signup
+            {hasInvite ? 'Complete Setup' : 'Signup'}
           </button>
           </div>
           

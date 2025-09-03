@@ -52,7 +52,7 @@ const FeedPage = () => {
 
   return (
     <>
-      <MainFeed handleDeletePost={handleDeletePost} posts={posts}></MainFeed>
+      <MainFeed handleDeletePost={handleDeletePost} posts={posts} setPosts={setPosts}></MainFeed>
     </>
   )
 }
