@@ -85,6 +85,20 @@ const LoginPage = () => {
             </div>
           )}
           
+          {inviteType === 'existing' && (
+            <div className='mb-4 p-3 bg-green-50 border border-green-200 rounded-lg'>
+              <p>🎉 You've been invited to join a new community!</p>
+              <p>Please login with your existing credentials to join the community.</p>
+            </div>
+          )}
+          
+          {inviteType === 'community' && (
+            <div className='mb-4 p-3 bg-purple-50 border border-purple-200 rounded-lg'>
+              <p>🎯 Community Invite</p>
+              <p>Login to join this community.</p>
+            </div>
+          )}
+          
           <Input label="Username or Email" type="text" id="Email" placeholder="Enter your Username or Email" value={username} setValue={setUsername} />
           <Input label="Password" type="password" id="Password" placeholder="Enter your password" value={password} setValue={setPassword} />
 

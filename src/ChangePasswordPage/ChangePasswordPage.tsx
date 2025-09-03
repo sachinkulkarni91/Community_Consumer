@@ -95,8 +95,8 @@ const ChangePasswordPage = () => {
   }
 
   return (
-    <div className='flex justify-center items-center aspect-[16/9] w-full gap-10'>
-      <div className='h-3/4 w-1/2 bg-primary rounded-4xl flex justify-center'>
+    <div className='flex justify-center items-center w-full min-h-screen overflow-hidden gap-10'>
+  <div className='h-[75vh] w-1/2 bg-primary rounded-4xl flex justify-center overflow-hidden'>
         <div className='w-3/4 max-w-[550px] bg-primary rounded-4xl flex flex-col text-lightText'> 
           <div className='text-4xl text-left text-text mb-4'> <b>Welcome to Knitspace</b></div>
           <div className='text-lg text-left mb-6'>
@@ -172,7 +172,7 @@ const ChangePasswordPage = () => {
 
       </div>
       
-      <div className='w-2/5 h-3/4 overflow-hidden rounded-4xl flex items-center my-auto'>
+  <div className='w-2/5 h-[75vh] overflow-hidden rounded-4xl flex items-center my-auto'>
         <img className='w-full h-full object-cover object-[75%_85%]' src="./assets/generic2.jpg" alt="" />
       </div>
     </div>
