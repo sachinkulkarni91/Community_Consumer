@@ -2,6 +2,7 @@ import axios from "axios"
 import { getApiUrl } from '../utils/api-url'
 
 const baseUrl = getApiUrl('/auth/forgot-password')
+const changePasswordUrl = getApiUrl('/api/users/change-password')
 
 const forgotPassword = async (email: string) => {
   const response = await axios.post(baseUrl, { email })
@@ -18,4 +19,14 @@ const resetPassword = async (email: string, password: string) => {
   return response.data
 }
 
-export default { forgotPassword, sendOTP, resetPassword }
+const changeFirstTimePassword = async (newPassword: string) => {
+  const response = await axios.post(changePasswordUrl, { 
+    newPassword 
+  }, {
+    withCredentials: true
+  })
+  return response.data
+}
+
+export { changeFirstTimePassword }
+export default { forgotPassword, sendOTP, resetPassword, changeFirstTimePassword }

@@ -9,6 +9,7 @@ import {
 import LandingPage from './LandingPage/LandingPage';
 import LoginPage from './LoginPage/LoginPage';
 import SignupPage from './SignupPage/SignupPage';
+import ChangePasswordPage from './ChangePasswordPage/ChangePasswordPage';
 import FeedPage from './FeedPage/FeedPage';
 import CommunityPage from './Community/CommunityPage';
 import { useTheme } from './Contexts/ThemeContext';
@@ -29,6 +30,7 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
+          <Route path="/change-password" element={<ChangePasswordPage />} />
           <Route path="/community/redirect" element={<RedirectPage />} />
           <Route path="/community/redirect/:token" element={<RedirectPage />} />
           <Route path="/community/join/:id" element={<JoinCommunity />} />

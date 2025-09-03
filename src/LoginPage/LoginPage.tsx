@@ -1,4 +1,4 @@
-import {useState } from 'react'
+import {useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import login from '../services/login';
 import { useUser } from '../Contexts/UserContext';
@@ -12,6 +12,7 @@ const LoginPage = () => {
   const params = new URLSearchParams(location.search);
   const returnTo = params.get("return_to")
   const inviteId = params.get("invite")
+  const inviteType = params.get("type") // Check if it's a user invite
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -23,25 +24,25 @@ const LoginPage = () => {
     try {
       const loginResponse = await login.login(username, password);
       
-      // Check if this is a first login that needs profile completion
+      // Check if this is a first login that needs password change
       if (loginResponse && loginResponse.firstLogin) {
-        const signupUrl = returnTo 
-          ? `/signup?return_to=${returnTo}` 
+        const changePasswordUrl = returnTo 
+          ? `/change-password?return_to=${returnTo}` 
           : inviteId 
-          ? `/signup?invite=${inviteId}`
-          : '/signup';
-        navigate(signupUrl);
+          ? `/change-password?invite=${inviteId}`
+          : '/change-password';
+        navigate(changePasswordUrl);
         return;
       }
       
       const userInfo = await getUser();
       if (userInfo.firstLogin) {
-        const signupUrl = returnTo 
-          ? `/signup?return_to=${returnTo}` 
+        const changePasswordUrl = returnTo 
+          ? `/change-password?return_to=${returnTo}` 
           : inviteId 
-          ? `/signup?invite=${inviteId}`
-          : '/signup';
-        navigate(signupUrl);
+          ? `/change-password?invite=${inviteId}`
+          : '/change-password';
+        navigate(changePasswordUrl);
         return;
       }
       setUser({
@@ -76,6 +77,15 @@ const LoginPage = () => {
         <div className='w-3/4 max-w-[550px] bg-primary rounded-4xl flex flex-col text-lightText'> 
           <div className='text-4xl text-left text-text mb-4 font-condensed'> <b>Welcome to Knitspace</b></div>
           <div className='text-lg text-left mb-8'>Sign in to your account</div>
+          
+          {inviteType === 'user' && (
+            <div className='mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg'>
+              <p className='text-sm text-blue-800'>
+                🎯 You've been invited! Use your email as username and the temporary password from your invite email to login.
+              </p>
+            </div>
+          )}
+          
           <Input label="Username or Email" type="text" id="Email" placeholder="Enter your Username or Email" value={username} setValue={setUsername} />
           <Input label="Password" type="password" id="Password" placeholder="Enter your password" value={password} setValue={setPassword} />
 
