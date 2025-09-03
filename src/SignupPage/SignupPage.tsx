@@ -4,7 +4,7 @@ import {getUser} from '../services/user';
 import { useUser } from '../Contexts/UserContext';
 import displayError from '../utils/error-toaster';
 import Input from '../CommonComponents/Input';
-import { signup, signupWithInvite, regularSignup } from '../services/signup';
+import { signupWithInvite, regularSignup } from '../services/signup';
 import { getInviteInfo } from '../services/invite';
 
 
@@ -24,7 +24,6 @@ const SignupPage = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
-  const [inviteInfo, setInviteInfo] = useState<any>(null);
   const [isInviteUser, setIsInviteUser] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -34,7 +33,6 @@ const SignupPage = () => {
       if (inviteId) {
         try {
           const info = await getInviteInfo();
-          setInviteInfo(info);
           
           if (info.type === 'user' && info.invitedEmail) {
             // User-specific invite - pre-fill all data
