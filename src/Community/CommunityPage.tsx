@@ -32,7 +32,13 @@ const CommunityPage = () => {
         const community = await getCommunityById(id);
         setCommunity(community);
         const rawPosts = await getCommunityPosts(id);
-        const modifiedPosts = postCleaner(rawPosts, user);
+        // Pass community context to handle short post shape (no embedded community object)
+        const modifiedPosts = postCleaner(
+          rawPosts,
+          user,
+          community.name,
+          community.profilePhoto
+        );
         setPosts(modifiedPosts);
       } catch (error) {
         displayError(error)  
