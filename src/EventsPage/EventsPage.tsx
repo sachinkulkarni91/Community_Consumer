@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
-import { enrollInEvent, unenrollFromEvent, isUserEnrolled, type Event } from '../services/events';
-import { useUser } from '../Contexts/UserContext';
+import { type Event } from '../services/events';
+
 import axios from 'axios';
 import { getApiUrl } from '../utils/api-url';
 
@@ -9,7 +8,7 @@ const EventsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'new' | 'past'>('new');
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useUser();
+  // Removed unused user from useUser
 
   useEffect(() => {
     fetchEvents();
@@ -81,25 +80,10 @@ const EventsPage: React.FC = () => {
     }
   };
 
-  const handleEnrollment = async (eventId: string, isEnrolled: boolean) => {
-    try {
-      if (isEnrolled) {
-        await unenrollFromEvent(eventId);
-        toast.success('Successfully unenrolled from event');
-      } else {
-        await enrollInEvent(eventId);
-        toast.success('Successfully enrolled in event');
-      }
-      // Refresh events to get updated enrollment status
-      fetchEvents();
-    } catch (error) {
-      console.error('Error updating enrollment:', error);
-      toast.error('Failed to update enrollment');
-    }
-  };
+
 
   const EventCard: React.FC<{ event: Event }> = ({ event }) => {
-    const userEnrolled = user ? isUserEnrolled(event, user.id) : false;
+  // Removed unused userEnrolled
     // Format date to match admin exactly: 15/3/2024 • 10:00
     const eventDate = new Date(event.startDateTime);
     const formattedDate = `${eventDate.getDate()}/${eventDate.getMonth() + 1}/${eventDate.getFullYear()}`;
