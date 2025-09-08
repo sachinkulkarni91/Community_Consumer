@@ -55,8 +55,8 @@ const Sidebar = ({selected, setSelected, sidebarOpen, setSidebarOpen} : Props) =
     {/* Sidebar */}
     <div className={`
       rounded-lg h-full bg-primary py-4 px-1.5 flex flex-col overflow-auto transition-all duration-300 ease-in-out
-      ${sidebarOpen ? 'fixed left-4 top-20 bottom-4 z-50 w-[264px] lg:relative lg:left-0 lg:top-0 lg:bottom-0 lg:z-0' : 'hidden lg:flex lg:w-[264px]'}
-      md:w-[220px] lg:w-[264px] xl:w-[275px]
+  ${sidebarOpen ? 'fixed left-4 top-20 bottom-4 z-50 w-[238px] lg:relative lg:left-0 lg:top-0 lg:bottom-0 lg:z-0' : 'hidden lg:flex lg:w-[238px]'}
+  md:w-[198px] lg:w-[238px] xl:w-[248px]
     `}>
       <div className={selected == 1 && !isOnCommunityPage ? selectedStyle : nonSelectedStyle} onClick={() => {setSelected(1); navigate("/feed"); setSidebarOpen?.(false)}}>
         <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill='currentColor'><path d="M240-280h280v-80H240zm400 0h80v-400h-80zM240-440h280v-80H240zm0-160h280v-80H240zm-80 480q-33 0-56.5-23.5T80-200v-560q0-33 23.5-56.5T160-840h640q33 0 56.5 23.5T880-760v560q0 33-23.5 56.5T800-120zm0-80h640v-560H160zm0 0v-560z"/></svg>
@@ -119,7 +119,7 @@ const Sidebar = ({selected, setSelected, sidebarOpen, setSidebarOpen} : Props) =
           </div>
         </div>
       )}
-      <div className={selected == 3 ? selectedStyle : nonSelectedStyle} onClick={() => {setSelected(3); setSidebarOpen?.(false)}}>
+  <div className={(selected == 3 || location.pathname.startsWith('/events')) ? selectedStyle : nonSelectedStyle} onClick={() => {setSelected(3); navigate('/events'); setSidebarOpen?.(false)}}>
         <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
         <path d="M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2M1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857z"/>
         <path d="M6.5 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>

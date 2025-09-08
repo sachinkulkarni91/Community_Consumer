@@ -19,6 +19,7 @@ import ForgotPassword from './ForgotPasswordPage/ForgotPassword';
 import RedirectPage from './CommonComponents/RedirectPage';
 import Layout from './CommonComponents/Layout';
 import CommunitiesPage from './CommunitiesPage/CommunitiesPage';
+import EventsPage from './EventsPage/EventsPage';
 
 function App() {
   const {theme} = useTheme()
@@ -40,6 +41,7 @@ function App() {
            <Route element={<Layout></Layout>}> 
             <Route path="/feed" element={<FeedPage />} />
             <Route path="/communities" element={<CommunitiesPage />} />
+            <Route path="/events" element={<EventsPage />} />
             <Route path="/community/:id" element={<CommunityPage />} />
           </Route>
           <Route path="/forgot-password" element={<ForgotPassword />} />

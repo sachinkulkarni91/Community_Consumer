@@ -1,13 +1,27 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Banner from "./Banner"
 import Sidebar from "./Sidebar"
 import Topbar from "./Topbar"
-import { Outlet } from "react-router-dom"
+import { Outlet, useLocation } from "react-router-dom"
 
   const Layout = () => {
   const [banner, setBanner] = useState(true)
   const [selected, setSelected] = useState(1)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const location = useLocation()
+  
+  // Update selected state based on current route
+  useEffect(() => {
+    if (location.pathname === '/feed') {
+      setSelected(1)
+    } else if (location.pathname === '/communities' || location.pathname.startsWith('/community/')) {
+      setSelected(2)
+    } else if (location.pathname.startsWith('/events')) {
+      setSelected(3)
+    } else {
+      setSelected(1) // Default to My Feed
+    }
+  }, [location.pathname])
   
   return (
    <div className='w-full h-full bg-secondary relative flex flex-col'>
