@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getApiUrl } from '../utils/api-url';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
@@ -13,7 +14,7 @@ const Announcements: React.FC = () => {
 
 
   useEffect(() => {
-    axios.get<AnnouncementObj[]>('/api/announcements')
+    axios.get<AnnouncementObj[]>(getApiUrl('/api/announcements'))
       .then((res) => {
         setAnnouncements(res.data);
         setLoading(false);
