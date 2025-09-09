@@ -90,7 +90,7 @@ export const getEvents = async (params?: {
 };
 
 // Get single event
-export const getEvent = async (): Promise<Event> => {
+export const getEvent = async (id: string): Promise<Event> => {
   const response = await axios.get(getApiUrl(`/api/events/all`));
   return response.data;
 };

@@ -20,6 +20,7 @@ import RedirectPage from './CommonComponents/RedirectPage';
 import Layout from './CommonComponents/Layout';
 import CommunitiesPage from './CommunitiesPage/CommunitiesPage';
 import EventsPage from './EventsPage/EventsPage';
+import Announcements from './CommonComponents/Announcements';
 
 function App() {
   const {theme} = useTheme()
@@ -43,6 +44,7 @@ function App() {
             <Route path="/communities" element={<CommunitiesPage />} />
             <Route path="/events" element={<EventsPage />} />
             <Route path="/community/:id" element={<CommunityPage />} />
+            <Route path="/announcements" element={<Announcements />} />
           </Route>
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/me" element={<ProfilePage/>}></Route>

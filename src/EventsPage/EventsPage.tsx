@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { type Event } from '../services/events';
-
+import { toast } from 'react-toastify';
+import { enrollInEvent, unenrollFromEvent, isUserEnrolled, type Event } from '../services/events';
+import { useUser } from '../Contexts/UserContext';
 import axios from 'axios';
 import { getApiUrl } from '../utils/api-url';
 
@@ -8,7 +9,7 @@ const EventsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'new' | 'past'>('new');
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
-  // Removed unused user from useUser
+  const { user } = useUser();
 
   useEffect(() => {
     fetchEvents();
@@ -25,7 +26,7 @@ const EventsPage: React.FC = () => {
         const timeFilter = activeTab === 'new' ? 'upcoming' : 'past';
         
         // Use the specific API endpoint you provided
-        const response = await axios.get(getApiUrl('/api/events/all'));
+        const response = await axios.get(getApiUrl('/api/events/'));
         const eventsData = response.data;
         console.log('📦 Raw API Response:', eventsData);
         console.log('📊 Response type:', typeof eventsData);
@@ -80,10 +81,25 @@ const EventsPage: React.FC = () => {
     }
   };
 
-
+  const handleEnrollment = async (eventId: string, isEnrolled: boolean) => {
+    try {
+      if (isEnrolled) {
+        await unenrollFromEvent(eventId);
+        toast.success('Successfully unenrolled from event');
+      } else {
+        await enrollInEvent(eventId);
+        toast.success('Successfully enrolled in event');
+      }
+      // Refresh events to get updated enrollment status
+      fetchEvents();
+    } catch (error) {
+      console.error('Error updating enrollment:', error);
+      toast.error('Failed to update enrollment');
+    }
+  };
 
   const EventCard: React.FC<{ event: Event }> = ({ event }) => {
-  // Removed unused userEnrolled
+    const userEnrolled = user ? isUserEnrolled(event, user.id) : false;
     // Format date to match admin exactly: 15/3/2024 • 10:00
     const eventDate = new Date(event.startDateTime);
     const formattedDate = `${eventDate.getDate()}/${eventDate.getMonth() + 1}/${eventDate.getFullYear()}`;
@@ -93,27 +109,104 @@ const EventsPage: React.FC = () => {
       hour12: false 
     });
     return (
-  <div className="bg-white rounded-xl border border-gray-200 shadow p-4 flex flex-col min-h-[240px] max-w-sm w-full mx-auto">
-        {event.image ? (
-          <img src={event.image} alt={event.title} style={{width: '262px', height: '172px'}} className="object-cover rounded-t-xl mx-auto" />
-        ) : (
-          <div style={{width: '262px', height: '172px'}} className="bg-gradient-to-br from-blue-400 to-purple-400 rounded-t-xl flex items-center justify-center mx-auto">
-            <svg className="w-16 h-16 text-white opacity-40" fill="none" viewBox="0 0 24 24"><path d="M8 17l4-4-4-4m8 8V7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+      <div className="rounded-lg shadow-sm overflow-hidden">
+        {/* Event Image with Gradient Background - reduced height */}
+        <div className="relative h-28 overflow-hidden">
+          {/* Event Image */}
+          {event.image && (
+            <img 
+              src={event.image} 
+              alt={event.title}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          )}
+          
+          {/* Gradient background overlay - only show if no image or as overlay */}
+          <div 
+            className="absolute inset-0"
+            style={{
+              background: event.image ? 
+                `linear-gradient(135deg, 
+                  rgba(79, 70, 229, 0.7) 0%, 
+                  rgba(124, 58, 237, 0.7) 25%, 
+                  rgba(37, 99, 235, 0.7) 50%, 
+                  rgba(14, 165, 233, 0.7) 75%, 
+                  rgba(6, 182, 212, 0.7) 100%
+                )` :
+                `linear-gradient(135deg, 
+                  #4F46E5 0%, 
+                  #7C3AED 25%, 
+                  #2563EB 50%, 
+                  #0EA5E9 75%, 
+                  #06B6D4 100%
+                )`
+            }}
+          >
+            {/* Wave pattern overlay */}
+            <div className="absolute inset-0">
+              <svg className="w-full h-full" viewBox="0 0 400 160" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="waveGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style={{stopColor: "rgba(255,255,255,0.2)"}} />
+                    <stop offset="50%" style={{stopColor: "rgba(255,255,255,0.1)"}} />
+                    <stop offset="100%" style={{stopColor: "rgba(255,255,255,0.05)"}} />
+                  </linearGradient>
+                </defs>
+                {/* Multiple wave layers for depth */}
+                <path d="M0,80 C80,20 160,140 240,60 C320,100 360,40 400,80 L400,160 L0,160 Z" 
+                      fill="url(#waveGradient)" opacity="0.6"/>
+                <path d="M0,100 C100,40 200,120 300,80 C350,60 380,90 400,70 L400,160 L0,160 Z" 
+                      fill="rgba(255,255,255,0.1)" opacity="0.4"/>
+                <path d="M0,120 C120,60 240,100 360,80 C380,75 390,85 400,80 L400,160 L0,160 Z" 
+                      fill="rgba(255,255,255,0.05)" opacity="0.3"/>
+              </svg>
+            </div>
           </div>
-        )}
-        <h3 className="text-base font-semibold text-gray-900 mt-3 mb-2 leading-tight line-clamp-2">{event.title}</h3>
-        <div className="flex items-center text-xs text-gray-500 mb-3">
-          <svg className="w-3 h-3 mr-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-          <span>{formattedDate} • {formattedTime}</span>
+          
+          {/* Partner Event Badge - smaller */}
+          <div className="absolute top-2 left-2">
+            <span className="bg-purple-600 text-white text-xs font-medium px-2 py-1 rounded-full">
+              Partner Event
+            </span>
+          </div>
+          
+          {/* Three dots menu - smaller */}
+          <div className="absolute top-2 right-2">
+            <button className="p-1 rounded-full hover:bg-black/10 transition-colors">
+              <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <circle cx="12" cy="5" r="2"/>
+                <circle cx="12" cy="12" r="2"/>
+                <circle cx="12" cy="19" r="2"/>
+              </svg>
+            </button>
+          </div>
         </div>
-        <button
-          onClick={() => window.open(event.meetingLink, '_blank')}
-          className="w-full py-2 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors mt-auto"
-        >
-          Enroll
-        </button>
+
+        {/* Event Content - reduced padding */}
+        <div className="p-3 bg-transparent">
+          {/* Event Title - smaller font */}
+          <h3 className="text-sm font-semibold text-gray-900 mb-2 leading-tight line-clamp-2">
+            {event.title}
+          </h3>
+
+          {/* Date and Time - smaller */}
+          <div className="flex items-center text-xs text-gray-500 mb-3">
+            <svg className="w-3 h-3 mr-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span>{formattedDate} • {formattedTime}</span>
+          </div>
+
+          {/* Enroll Button - only for upcoming events */}
+          {eventDate >= new Date() && event.meetingLink && (
+            <button
+              onClick={() => window.open(event.meetingLink, '_blank')}
+              className="w-full py-2 px-3 rounded-lg text-xs font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+            >
+              Enroll
+            </button>
+          )}
+        </div>
       </div>
     );
   };
@@ -121,7 +214,7 @@ const EventsPage: React.FC = () => {
   // No need to filter here since API already returns filtered data based on activeTab
 
   return (
-  <div className="flex-1 bg-transparent min-h-screen">
+    <div className="flex-1 bg-gray-50 min-h-screen">
       <div className="px-6 py-8">
         {/* Header */}
         <div className="mb-8">
