@@ -18,6 +18,8 @@ import { Outlet, useLocation } from "react-router-dom"
       setSelected(2)
     } else if (location.pathname.startsWith('/events')) {
       setSelected(3)
+    } else if (location.pathname === '/announcements') {
+      setSelected(4)
     } else {
       setSelected(1) // Default to My Feed
     }
